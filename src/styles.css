@@ -1,4 +1,28 @@
 /* styles.css */
 body {
-  background-color: rebeccapurple;
+  font-family: 'Courier New', Courier, monospace;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #111118;
+  padding: 30px;
+}
+
+.main-tab {
+  background-color: #FFB800;
+  min-height: 500px;
+  width: 65%;
+  padding: 30px;
+  font-family: inherit;
+}
+
+.main-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+input {
+  font-family: inherit;
+  padding: 20px;
 }
