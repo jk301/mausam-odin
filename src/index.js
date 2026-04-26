@@ -148,12 +148,19 @@ const theBody = ((current, location, unit) => {
     statsGrid.classList.add("stats-grid")
 
     const stats = [
+        // looping through this is efficient (inspired)
         { label: "Feels Like", value: `${current.feelslike}${unit}` },
         { label: "Humidity", value: `${current.humidity} %` },
         { label: "Rain Chance", value: `${current.precipprob}%` },
         { label: "Wind Speed", value: `${current.windspeed} km/h` },
         { label: "Visibility", value: `${current.visibility} km` },
         { label: "UV Index", value: current.uvindex },
+        { label: "Dew Point", value: `${current.dew}${unit}` },
+        { label: "Pressure", value: `${current.pressure} hPa` },
+        { label: "Cloud Cover", value: `${current.cloudcover} %` },
+        { label: "Moon Phase", value: current.moonphase },
+        { label: "Sunrise", value: current.sunrise },
+        { label: "Sunset", value: current.sunset },
     ]
 
     stats.forEach(({ label, value }) => {
