@@ -35,10 +35,12 @@ head.appendChild(bod)
 // for higher scope 
 let current = null
 let addr = null
+
 let currTemp = null
 let feelTemp = null
+let dewPoint = null
 
-// Showing error 
+// Showing error & stuff
 const badReq = (() => {
     // could add more error checks in future
     const msg = document.createElement("div")
@@ -47,7 +49,10 @@ const badReq = (() => {
     const initialMsg = document.createElement("div")
     initialMsg.textContent = "Couldn't load the data for some reason :("
 
-    return {msg, initialMsg}
+    const fetching = document.createElement("Div")
+    fetching.textContent = "fetching..."
+
+    return {msg, initialMsg, fetching}
 })()
 
 // initial data 
@@ -62,6 +67,7 @@ const initial = ( async () => {
     addr = initialData.resolvedAddress
     currTemp = current.temp
     feelTemp = current.feelslike
+    dewPoint = current.dew
     theBody(current, addr, header.toggle.textContent)
 })()
 
@@ -80,6 +86,7 @@ header.search.addEventListener("keydown", async (e) => {
         addr = data.resolvedAddress
         currTemp = current.temp
         feelTemp = current.feelslike
+        dewPoint = current.dew
         header.toggle.textContent = "°F"
 
         theBody(current, addr, header.toggle.textContent)
@@ -93,12 +100,14 @@ header.toggle.addEventListener("click", () => {
         header.toggle.textContent = "°F"
         current.temp = currTemp
         current.feelslike = feelTemp
+        current.dew = dewPoint
         bod.innerHTML = ""
         theBody(current, addr, header.toggle.textContent)
     } else if (header.toggle.textContent === "°F") {
         header.toggle.textContent = "°C"
         current.temp = Math.round((currTemp - 32) * 5/9)
         current.feelslike = Math.round((feelTemp - 32) * 5/9)
+        current.dew =  Math.round((dewPoint - 32) * 5/9)
         bod.innerHTML = ""
         theBody(current, addr, header.toggle.textContent)
     } else {
