@@ -16,7 +16,8 @@ const header = (() => {
 
     const search = document.createElement("input")
     search.type = "search"
-    search.placeholder = "search"
+    search.placeholder = "search by location"
+    search.spellcheck = false
 
     const toggle = document.createElement("button")
     toggle.textContent = "°F"
@@ -120,10 +121,13 @@ async function fetchData(location = "delhi") {
     try {
         const url = `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${location}?key=EBGG3FSHC2H9K7G2FRG8T567B&include=current`
 
+        bod.innerHTML = ""
+        bod.appendChild(badReq.fetching)
         const response = await fetch(url)
         if (!response.ok) {
             throw new Error(`HTTP error: ${response.status}`)
         }
+        bod.innerHTML = ""
         const data = await response.json()
         console.log(data);
         return data
