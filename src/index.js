@@ -19,15 +19,8 @@ const header = (() => {
     search.placeholder = "search"
 
     const toggle = document.createElement("button")
-    toggle.textContent = "°C"
+    toggle.textContent = "°F"
 
-    toggle.addEventListener("click", () => {
-        if (toggle.textContent === "°C") {
-            toggle.textContent = "°F"
-        } else {
-            toggle.textContent = "°C"
-        }
-    })
 
     headerDiv.appendChild(title)
     headerDiv.appendChild(search)
@@ -39,38 +32,97 @@ const header = (() => {
 head.appendChild(header.headerDiv)
 head.appendChild(bod)
 
+// for higher scope 
+let current = null
+let addr = null
+let currTemp = null
+let feelTemp = null
+
+// Showing error 
+const badReq = (() => {
+    // could add more error checks in future
+    const msg = document.createElement("div")
+    msg.textContent = "Bad request :( couldn't find the place"
+
+    const initialMsg = document.createElement("div")
+    initialMsg.textContent = "Couldn't load the data for some reason :("
+
+    return {msg, initialMsg}
+})()
+
+// initial data 
+const initial = ( async () => {
+    const initialData = await fetchData()
+    if (!initialData) {
+        bod.innerHTML = ""
+        bod.appendChild(badReq.initialMsg)
+        return
+    }
+    current = initialData.currentConditions
+    addr = initialData.resolvedAddress
+    currTemp = current.temp
+    feelTemp = current.feelslike
+    theBody(current, addr, header.toggle.textContent)
+})()
+
+// search
 header.search.addEventListener("keydown", async (e) => {
     if (e.key === "Enter") {
+        if (header.search.value.trim() === "") return
         bod.innerHTML = ""
         const data = await fetchData(header.search.value.trim())
-        const current = data.currentConditions
-        const addr = data.resolvedAddress
+        if (!data) {
+            bod.innerHTML = ""
+            bod.appendChild(badReq.msg)
+            return
+        }
+        current = data.currentConditions
+        addr = data.resolvedAddress
+        currTemp = current.temp
+        feelTemp = current.feelslike
+        header.toggle.textContent = "°F"
 
-        const unit = header.toggle.textContent
-
-        theBody(current, addr, unit)
+        theBody(current, addr, header.toggle.textContent)
 
     }
 })
 
+// Toggling with the data at hand (not fetching for each toggle)
+header.toggle.addEventListener("click", () => {
+    if (header.toggle.textContent === "°C") {
+        header.toggle.textContent = "°F"
+        current.temp = currTemp
+        current.feelslike = feelTemp
+        bod.innerHTML = ""
+        theBody(current, addr, header.toggle.textContent)
+    } else if (header.toggle.textContent === "°F") {
+        header.toggle.textContent = "°C"
+        current.temp = Math.round((currTemp - 32) * 5/9)
+        current.feelslike = Math.round((feelTemp - 32) * 5/9)
+        bod.innerHTML = ""
+        theBody(current, addr, header.toggle.textContent)
+    } else {
+        return
+    }
+})
+
+// Fetch 
 async function fetchData(location = "delhi") {
     try {
         const url = `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${location}?key=EBGG3FSHC2H9K7G2FRG8T567B&include=current`
 
         const response = await fetch(url)
+        if (!response.ok) {
+            throw new Error(`HTTP error: ${response.status}`)
+        }
         const data = await response.json()
         console.log(data);
         return data
         
     } catch (error) {
-        console.log(`error ${error}`)
+        console.log(error)
     }
 }
-
-// const iconImg = document.createElement("img");
-// iconImg.src = `https://raw.githubusercontent.com/visualcrossing/WeatherIcons/main/SVG/2nd%20Set%20-%20Color/${current.icon}.svg`;
-// iconImg.alt = current.icon;
-
 
 // The body
 const theBody = ((current, location, unit) => {
@@ -84,7 +136,8 @@ const theBody = ((current, location, unit) => {
     iconImg.src = `https://raw.githubusercontent.com/visualcrossing/WeatherIcons/main/SVG/1st%20Set%20-%20Monochrome/${current.icon}.svg`
 
     const tempCond = document.createElement("div")
-    const temprature = document.createElement("h3")
+    tempCond.classList.add("temp-div")
+    const temprature = document.createElement("h2")
     temprature.textContent = `${current.temp}${unit}`
     const desc = document.createElement("p")
     desc.textContent = current.conditions

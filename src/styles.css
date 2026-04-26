@@ -3,15 +3,17 @@ body {
   font-family: 'Courier New', Courier, monospace;
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
   background-color: #111118;
-  padding: 30px;
+  padding: 0;
+  margin: 0;
+  min-height: 100vh; 
 }
 
 .main-tab {
   background-color: #FFB800;
-  min-height: 500px;
-  width: 65%;
+  min-height: 100vh;
+  width: 50%;
   padding: 30px;
   font-family: inherit;
 }
@@ -63,6 +65,15 @@ button:hover {
 .hero-tile > img {
   height: 80px;
   width: 80px;
+}
+
+.temp-div{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.temp-div :first-child {
+  margin: 0;
 }
 
 .stats-grid {
